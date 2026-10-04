@@ -1,0 +1,17 @@
+{
+  "version": "26.930.3930.0",
+  "publisher": "CN=50BDFD77-8903-4850-9FFE-6E8522F64D5B",
+  "asset": "webview/assets/app-initial-74dc12f48352.js",
+  "original_sha256": "7fe079aa06167a43e8f6b638f341f1171474a5980b6d08d6bb9b32613c62a797",
+  "patched_sha256": "2b1a87169a31706af5b8371ab3a2f7f02dd5fc66b9c61eff9bb1e4a84fd6529f",
+  "edits": [
+    {
+      "old": "let{data:c,isPending:l}=kd(Sd,s),u=!!i?.isLoading||a&&l,d=a&&!u&&c!=null&&c?.requirements?.featureRequirements?.fast_mode!==!1",
+      "new": "let{data:c,isPending:l}=kd(Sd,s),u=!!i?.isLoading||l,d=!u&&c!=null&&c?.requirements?.featureRequirements?.fast_mode!==!1"
+    },
+    {
+      "old": "let n=await $$i(e,t);if(n!==`chatgpt`&&n!==`personalAccessToken`)return!1;let r=await eNe(e,t,{priority:`critical`});",
+      "new": "let n=await $$i(e,t);let r=await eNe(e,t,{priority:`critical`});"
+    }
+  ]
+}

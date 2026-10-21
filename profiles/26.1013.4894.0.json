@@ -1,0 +1,30 @@
+{
+  "version": "26.1013.4894.0",
+  "publisher": "CN=50BDFD77-8903-4850-9FFE-6E8522F64D5B",
+  "asset": "webview/assets/app-initial-5851df3f6cb1.js",
+  "original_sha256": "c70d95da34ba7e5962a559dbf68d0102d10b4b47b877f5d9933629bb5a1f3a10",
+  "patched_sha256": "65721d9578006b15144e1577ea6a1a8dd36e123e2d516b4dcfd735a625e297b9",
+  "edits": [
+    {
+      "old": "async function S$s(e,t){let n=await v$s(e,t);if(n!==`chatgpt`&&n!==`personalAccessToken`)return null;let r=await kSn(e,t,{priority:`critical`});return e.query.setData(nC,{authMethod:n,hostId:t},r),Tr(r)}",
+      "new": "async function S$s(e,t){let n=await v$s(e,t);let r=await kSn(e,t,{priority:`critical`});return e.query.setData(nC,{authMethod:n,hostId:t},r),Tr(r)}"
+    },
+    {
+      "old": "let{data:c,isPending:l}=Eu(nC,s),u=!!i?.isLoading||a&&l,d;t[3]!==c||t[4]!==u||t[5]!==a?(d=a&&!u&&c!=null?Tr(c):null,t[3]=c,t[4]=u,t[5]=a,t[6]=d):d=t[6]",
+      "new": "let{data:c,isPending:l}=Eu(nC,s),u=!!i?.isLoading||l,d;t[3]!==c||t[4]!==u||t[5]!==a?(d=!u&&c!=null?Tr(c):null,t[3]=c,t[4]=u,t[5]=a,t[6]=d):d=t[6]"
+    }
+  ],
+  "behavior_symbols": {
+    "request": "S$s",
+    "auth_lookup": "v$s",
+    "requirements_lookup": "kSn",
+    "query_key": "nC",
+    "converter": "Tr",
+    "ui": "Mxo",
+    "memo": "Nxo",
+    "host": "q",
+    "host_atom": "gk",
+    "auth": "OT",
+    "query": "Eu"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "version": "26.1007.2314.0",
+  "publisher": "CN=50BDFD77-8903-4850-9FFE-6E8522F64D5B",
+  "asset": "webview/assets/app-initial-b8e1c8014bb4.js",
+  "original_sha256": "799331dde54905c4df5e360f23a9621141759e2c0acb230aeab909f9904b646f",
+  "patched_sha256": "163c9f8ed9f0ba93e338c96284aba315a7756d0041df4705a433f3500901ddff",
+  "edits": [
+    {
+      "old": "async function bga(e,t){let n=await _ga(e,t);if(n!==`chatgpt`&&n!==`personalAccessToken`)return null;let r=await KPe(e,t,{priority:`critical`});return e.query.setData(Hd,{authMethod:n,hostId:t},r),oee(r)}",
+      "new": "async function bga(e,t){let n=await _ga(e,t);let r=await KPe(e,t,{priority:`critical`});return e.query.setData(Hd,{authMethod:n,hostId:t},r),oee(r)}"
+    },
+    {
+      "old": "let{data:c,isPending:l}=Zs(Hd,s),u=!!i?.isLoading||a&&l,d;t[3]!==c||t[4]!==u||t[5]!==a?(d=a&&!u&&c!=null?oee(c):null,t[3]=c,t[4]=u,t[5]=a,t[6]=d):d=t[6]",
+      "new": "let{data:c,isPending:l}=Zs(Hd,s),u=!!i?.isLoading||l,d;t[3]!==c||t[4]!==u||t[5]!==a?(d=!u&&c!=null?oee(c):null,t[3]=c,t[4]=u,t[5]=a,t[6]=d):d=t[6]"
+    }
+  ]
+}

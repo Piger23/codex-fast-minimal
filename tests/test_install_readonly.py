@@ -89,3 +89,53 @@ try {
         result = self.run_check()
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('MSIX identity mismatch', result.stdout)
+
+    def run_cache_check(self, change=None):
+        record = {'CertificateThumbprint': 'test-cert', 'SourceFastHash': self.plan['FastHash'],
+                  'SourceRecoveryHash': self.plan['RecoveryHash'], 'Artifacts': []}
+        for label in ('Fast', 'Recovery'):
+            path = self.directory / (label.lower() + '-signed-1234abcd.msix')
+            path.write_bytes(b'metadata-test-only')
+            record[label+'Path'] = str(path)
+            record['Artifacts'].append({'path': str(path), 'sha256': 'a'*64})
+        if change:
+            change(record)
+        (self.directory/'cache.json').write_text(json.dumps(record))
+        (self.directory/'plan.json').write_text(json.dumps(self.plan))
+        script = r'''
+$ErrorActionPreference='Stop'
+try {
+    $tokens=$null;$errors=$null
+    $tree=[Management.Automation.Language.Parser]::ParseFile((Join-Path $env:FAST_TEST_REPO 'scripts/Install.ps1'),[ref]$tokens,[ref]$errors)
+    if($errors.Count) {throw 'Installer syntax error'}
+    $helper=$tree.Find({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Read-SignedCache'},$true)
+    Invoke-Expression $helper.Extent.Text
+    $plan=Get-Content -Raw (Join-Path $env:FAST_TEST_ROOT 'plan.json') | ConvertFrom-Json
+    $result=Read-SignedCache (Join-Path $env:FAST_TEST_ROOT 'cache.json') $env:FAST_TEST_ROOT $plan 'test-cert'
+    if($null -eq $result) {Write-Output 'CACHE-MISS'} else {Write-Output 'CACHE-CANDIDATE-REQUIRES-FULL-REVALIDATION'}
+} catch {Write-Output $_.Exception.Message;exit 1}
+'''
+        env = dict(os.environ, FAST_TEST_REPO=str(REPO), FAST_TEST_ROOT=str(self.directory))
+        return subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive', '-Command', script],
+                              env=env, capture_output=True, text=True, timeout=30)
+
+    def test_signed_cache_metadata_matching_build(self):
+        result = self.run_cache_check()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn('REQUIRES-FULL-REVALIDATION', result.stdout)
+
+    def test_signed_cache_other_certificate_or_source_is_not_reused(self):
+        for key in ('CertificateThumbprint', 'SourceFastHash', 'SourceRecoveryHash'):
+            result = self.run_cache_check(lambda record: record.update({key: 'different'}))
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn('CACHE-MISS', result.stdout)
+
+    def test_signed_cache_outside_build_refused(self):
+        result = self.run_cache_check(lambda record: record.update({'FastPath': str(self.directory.parent/'fast-signed-1234abcd.msix')}))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('outside this build', result.stdout)
+
+    def test_signed_cache_incomplete_digest_refused(self):
+        result = self.run_cache_check(lambda record: record.update({'Artifacts': []}))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('Incomplete signed artifact digest', result.stdout)
